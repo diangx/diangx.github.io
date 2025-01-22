@@ -3,6 +3,9 @@ const { defineConfig } = require('@vue/cli-service')
 const CUSTOM = require('./env.json')
 process.env.STATE = CUSTOM.STATE
 process.env.CRYPTO_SERVERADDRESS = CUSTOM.CRYPTO_SERVERADDRESS
+process.env.UPBIT_OPEN_API_ACCESS_KEY = CUSTOM.UPBIT_OPEN_API_ACCESS_KEY
+process.env.UPBIT_OPEN_API_SECRET_KEY = CUSTOM.UPBIT_OPEN_API_SECRET_KEY
+process.env.UPBIT_OPEN_API_SERVER_URL = CUSTOM.UPBIT_OPEN_API_SERVER_URL
 
 module.exports = defineConfig({
     outputDir: 'docs', // 빌드 결과물을 docs 디렉토리에 생성
@@ -20,7 +23,10 @@ module.exports = defineConfig({
             args[0]['process.env'] = {
                 ...args[0]['process.env'],
                 STATE: JSON.stringify(process.env.STATE),
-                CRYPTO_SERVERADDRESS: JSON.stringify(process.env.CRYPTO_SERVERADDRESS)
+                CRYPTO_SERVERADDRESS: JSON.stringify(process.env.CRYPTO_SERVERADDRESS),
+                UPBIT_OPEN_API_ACCESS_KEY: JSON.stringify(process.env.UPBIT_OPEN_API_ACCESS_KEY),
+                UPBIT_OPEN_API_SECRET_KEY: JSON.stringify(process.env.UPBIT_OPEN_API_SECRET_KEY),
+                UPBIT_OPEN_API_SERVER_URL: JSON.stringify(process.env.UPBIT_OPEN_API_SERVER_URL)
             }
 
             return args;
