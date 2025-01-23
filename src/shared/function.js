@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const CRYPTO_SERVERADDRESS = process.env.CRYPTO_SERVERADDRESS
+const key = JSON.parse(sessionStorage.getItem("env"));
 
 /*********************************************************************************************/
 /******************************************** GET ********************************************/
@@ -10,7 +11,13 @@ const CRYPTO_SERVERADDRESS = process.env.CRYPTO_SERVERADDRESS
 */
 export const getAccount = () => {
 	return new Promise((resolve) => {
-        axios.get(CRYPTO_SERVERADDRESS+'/api/account',{
+        axios.get(CRYPTO_SERVERADDRESS+'/api/account',
+        {
+            params : {
+                key
+            }
+        },
+        {
             headers: {
                 'Content-Type': 'application/json',
             },
