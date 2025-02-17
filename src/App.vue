@@ -25,7 +25,7 @@ export default {
     const route = useRoute();
 
     // 현재 경로가 '/code'인지 확인
-    const isCodePage = computed(() => route.path === '/code');
+    const isCodePage = computed(() => route.path === '/code' || route.path === '/mcs');
 
     // /code 경로에서는 'clean-page', 그 외는 'styled-page'
     const pageClass = computed(() => (isCodePage.value ? 'clean-page' : 'styled-page'));
