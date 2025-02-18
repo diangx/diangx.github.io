@@ -28,7 +28,7 @@
       </div>
   
       <div v-show="value === 3">
-        <p>Upgrade Page</p>
+        <upgradePage></upgradePage>
       </div>
   </div>
 </template>
@@ -42,12 +42,16 @@ import chartData from './home/chart/index.vue'
 // DATA
 import resultData from './data/result/index.vue'
 
+// DATA
+import upgradePage from './upgrade/index.vue'
+
 export default {
   components: {
     statusData,
     chartData,
     // factoryData,
-    resultData
+    resultData,
+    upgradePage
   },
   data() {
     return {
