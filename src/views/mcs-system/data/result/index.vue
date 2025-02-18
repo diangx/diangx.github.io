@@ -1,20 +1,33 @@
 <template>
-  <v-data-table
-    v-model:items-per-page="itemsPerPage"
-    :headers="headers"
-    :items="filteredItems"
-    :items-length="filteredItems.length"
-    :loading="loading"
-    item-value="code"
-  >
-    <template v-slot:tfoot>
-      <tr>
-        <td>
-          <v-text-field v-model="code" class="ma-2" density="compact" placeholder="Search" hide-details></v-text-field>
-        </td>
-      </tr>
-    </template>
-  </v-data-table>
+  <v-container>
+    <!-- 전역 로딩 오버레이 -->
+    <v-overlay :model-value="loading" class="d-flex align-center justify-center">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+
+    <v-data-table
+      v-model:items-per-page="itemsPerPage"
+      :headers="headers"
+      :items="filteredItems"
+      :items-length="filteredItems.length"
+      :loading="loading || searching"
+      item-value="code"
+    >
+      <template v-slot:tfoot>
+        <tr>
+          <td>
+            <v-text-field 
+              v-model="code" 
+              class="ma-2" 
+              density="compact" 
+              placeholder="Search"
+              hide-details
+            ></v-text-field>
+          </td>
+        </tr>
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>
@@ -26,42 +39,63 @@ export default {
       { title: 'Date', key: 'date', align: 'center' },
       { title: 'Distance(m)', key: 'distance', align: 'center' },
       { title: 'Estimated Time(sec)', key: 'est_time', align: 'center' },
-      { title: 'Device', key: 'device', align: 'center' }
+      { title: 'Device', key: 'name', align: 'center' },
+      { title: 'MAC', key: 'macaddress', align: 'center' }
     ],
     machineData1: [],
+    filteredItems: [],
     code: '',
     loading: false,
+    searching: false,
+    searchTimeout: null
   }),
-  computed: {
-    filteredItems() {
-      return this.machineData1.filter(item => {
-        return !this.code || item.code.toLowerCase().includes(this.code.toLowerCase());
-      });
+  watch: {
+    code() {
+      this.searching = true;
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = setTimeout(() => {
+        this.filterItems();
+        this.searching = false;
+      }, 1000); // 입력 후 300ms 동안 추가 입력 없으면 실행
+    }
+  },
+  methods: {
+    filterItems() {
+      if (!this.code) {
+        this.filteredItems = this.machineData1;
+      } else {
+        this.filteredItems = this.machineData1.filter(item => 
+          item.code.toLowerCase().includes(this.code.toLowerCase())
+        );
+      }
+    },
+    preventNavigation(event) {
+      if (this.loading) {
+        event.preventDefault();
+        event.returnValue = ''; // 일부 브라우저에서는 필요
+      }
     }
   },
   async mounted() {
-    this.loading = true
+    this.loading = true;
+    window.addEventListener("beforeunload", this.preventNavigation); // 페이지 나가기 방지
     try {
-      const [response1, response2, response3] = await Promise.all([
-        fetch('http://localhost:3000/api/machine1_History'),
-        fetch('http://localhost:3000/api/machine2_History'),
-        fetch('http://localhost:3000/api/machine3_History')
-      ]);
-      
-      const data1 = await response1.json();
-      const data2 = await response2.json();
-      const data3 = await response3.json();
+      const response = await fetch('http://localhost:3000/api/machines/product_info');
+      const data1 = await response.json();
 
-      this.loading = false
-      
-      this.machineData1 = [...data1, ...data2, ...data3].map(item => ({
-        ...item,
-        device: item.device === 'machine1' ? 'CF AGV' : item.device === 'machine2' ? 'PT AGV' : 'HRF AGV'
+      if (data1 && typeof data1 === 'object') {
+        this.machineData1 = Object.keys(data1).reduce((acc, key) => acc.concat(data1[key]), []);
+      } else {
+        this.machineData1 = [];
+      }
 
-      })).sort((a, b) => new Date(b.date) - new Date(a.date));
+      this.filteredItems = this.machineData1; // 초기값 설정
+      this.loading = false;
+      window.removeEventListener("beforeunload", this.preventNavigation); // 로딩 끝나면 해제
     } catch (error) {
       console.error('데이터를 불러오는 데 실패했습니다:', error);
-      this.loading = false
+      this.loading = false;
+      window.removeEventListener("beforeunload", this.preventNavigation); // 오류 발생 시 해제
     }
   }
 };
