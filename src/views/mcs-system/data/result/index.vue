@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <!-- 전역 로딩 오버레이 -->
-    <v-overlay :model-value="loading" class="d-flex align-center justify-center">
+    <v-overlay :model-value="loading" class="d-flex align-center justify-center" persistent>
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
 
