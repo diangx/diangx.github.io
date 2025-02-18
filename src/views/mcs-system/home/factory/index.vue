@@ -72,7 +72,7 @@ export default {
   data() {
     return {
       roomAverage: { temperature: 25.40, humidity: 19.68 },
-      apiUrl: "https://your-api-endpoint.com/data", // <-- 여기에 API URL을 입력하세요.
+      apiUrl: "http://localhost:3000/api/random-data",
       chartInstance: null, // 차트 인스턴스
       timestamps: [],
       temperature: [],
@@ -84,34 +84,18 @@ export default {
   },
   methods: {
     async fetchData() {
-//       try {
-//         const response = await fetch(this.apiUrl);
-//         const data = {
-//   "timestamps": ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
-//   "temperature": [22, 21, 23, 24, 25, 26, 27, 26, 25, 24, 23, 22],
-//   "humidity": [30, 32, 31, 29, 28, 30, 33, 34, 35, 33, 32, 31]
-// }
-
-//         this.timestamps = data.timestamps;
-//         this.temperature = data.temperature;
-//         this.humidity = data.humidity;
-
-//         this.renderChart();
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       }
-
-        const data = {
-          "timestamps": ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
-          "temperature": [22, 21, 23, 24, 25, 26, 27, 26, 25, 24, 23, 22],
-          "humidity": [30, 32, 31, 29, 28, 30, 33, 34, 35, 33, 32, 31]
-        }
+      try {
+        const response = await fetch(this.apiUrl);
+        const data = await response.json();
 
         this.timestamps = data.timestamps;
         this.temperature = data.temperature;
         this.humidity = data.humidity;
 
         this.renderChart();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     },
     renderChart() {
       const ctx = document.getElementById('temperatureHumidityChart');

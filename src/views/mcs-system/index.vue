@@ -25,15 +25,15 @@
     </v-layout>
 
     <div v-show="value === 1">
-      <!-- <statusData></statusData>
-      <v-divider></v-divider> -->
+        <statusData></statusData>
+      <v-divider></v-divider>
         <chartData></chartData>
       <v-divider></v-divider>
         <factoryData></factoryData>
     </div>
 
     <div v-show="value === 2">
-      <dataData></dataData>
+      <resultData></resultData>
     </div>
 
     <div v-show="value === 3">
@@ -43,17 +43,20 @@
 </template>
 
 <script>
-import statusData from './status/index.vue'
-import chartData from './chart/index.vue'
-import factoryData from './factory/index.vue'
-import dataData from './data/index.vue'
+// HOME
+import statusData from './home/status/index.vue'
+import chartData from './home/chart/index.vue'
+import factoryData from './home/factory/index.vue'
+
+// DATA
+import resultData from './data/result/index.vue'
 
 export default {
   components: {
     statusData,
     chartData,
     factoryData,
-    dataData
+    resultData
   },
   data() {
     return {
