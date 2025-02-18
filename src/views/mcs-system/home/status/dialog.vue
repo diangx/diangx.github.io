@@ -89,26 +89,35 @@ export default {
   },
   methods: {
     async fetchData() {
-      this.loading = true;
-      this.machineData1 = [];
-      this.filteredItems = [];
+        this.loading = true;
+        this.machineData1 = [];
+        this.filteredItems = [];
 
-      try {
-        const response = await fetch("http://localhost:3000/api/machines/device_info");
-        const data1 = await response.json();
+        try {
+            let response;
+            
+            try {
+                response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/machines/device_info", {
+                    headers: { 'ngrok-skip-browser-warning': '69420' }
+                });
+            } catch {
+                response = await fetch("http://localhost:3000/api/machines/device_info");
+            }
 
-        if (data1 && typeof data1 === "object") {
-          this.machineData1 = Object.values(data1); // 객체를 배열로 변환하여 저장
-        } else {
-          this.machineData1 = [];
+            const data1 = await response.json();
+
+            if (data1 && typeof data1 === "object") {
+                this.machineData1 = Object.values(data1); // 객체를 배열로 변환하여 저장
+            } else {
+                this.machineData1 = [];
+            }
+
+            this.filterData(this.title); // 데이터를 받은 후 필터링 실행
+        } catch {
+            this.machineData1 = [];
+        } finally {
+            this.loading = false;
         }
-
-        this.filterData(this.title); // 데이터를 받은 후 필터링 실행
-      } catch (error) {
-        console.error("데이터를 불러오는 데 실패했습니다:", error);
-      } finally {
-        this.loading = false;
-      }
     },
     filterData(title) {
       if (!title || !this.machineData1.length) {

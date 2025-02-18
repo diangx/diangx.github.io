@@ -74,32 +74,33 @@ export default {
       this.value = selectedValue;
     },
     connectWebSocket() {
-      if (window.socket && window.socket.readyState === WebSocket.OPEN) {
-        console.log("기존 WebSocket 연결 재사용");
-        return;
-      }
-
-      window.socket = new WebSocket("ws://localhost:3000");
-
-      window.socket.onopen = () => {
-        console.log("웹소켓 연결 성공");
-      };
-
-      window.socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          this.status_ws_data = data.status;
-        } catch (error) {
-          console.error("웹소켓 데이터 오류:", error);
+        if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+            return;
         }
-      };
 
-      window.socket.onclose = () => {
-        console.log("웹소켓 연결이 종료됨, 3초 후 재연결...");
-        setTimeout(() => {
-          this.connectWebSocket();
-        }, 3000);
-      };
+        let wsUrl = "wss://definitely-handy-cow.ngrok-free.app";
+
+        try {
+            window.socket = new WebSocket(wsUrl);
+        } catch {
+            wsUrl = "ws://localhost:3000";
+            window.socket = new WebSocket(wsUrl);
+        }
+
+        window.socket.onopen = () => {};
+
+        window.socket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                this.status_ws_data = data.status;
+            } catch {}
+        };
+
+        window.socket.onclose = () => {
+            setTimeout(() => {
+                this.connectWebSocket();
+            }, 3000);
+        };
     }
   }
 };

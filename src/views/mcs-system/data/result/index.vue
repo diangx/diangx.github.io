@@ -77,26 +77,35 @@ export default {
     }
   },
   async mounted() {
-    this.loading = true;
-    window.addEventListener("beforeunload", this.preventNavigation); // 페이지 나가기 방지
-    try {
-      const response = await fetch('http://localhost:3000/api/machines/product_info');
-      const data1 = await response.json();
+      this.loading = true;
+      window.addEventListener("beforeunload", this.preventNavigation); // 페이지 나가기 방지
 
-      if (data1 && typeof data1 === 'object') {
-        this.machineData1 = Object.keys(data1).reduce((acc, key) => acc.concat(data1[key]), []);
-      } else {
-        this.machineData1 = [];
+      try {
+          let response;
+
+          try {
+              response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/machines/product_info", {
+                  headers: { 'ngrok-skip-browser-warning': '69420' }
+              });
+          } catch {
+              response = await fetch("http://localhost:3000/api/machines/product_info");
+          }
+
+          const data1 = await response.json();
+
+          if (data1 && typeof data1 === "object") {
+              this.machineData1 = Object.keys(data1).reduce((acc, key) => acc.concat(data1[key]), []);
+          } else {
+              this.machineData1 = [];
+          }
+
+          this.filteredItems = this.machineData1; // 초기값 설정
+      } catch {
+          this.machineData1 = [];
+      } finally {
+          this.loading = false;
+          window.removeEventListener("beforeunload", this.preventNavigation); // 로딩 끝나면 해제
       }
-
-      this.filteredItems = this.machineData1; // 초기값 설정
-      this.loading = false;
-      window.removeEventListener("beforeunload", this.preventNavigation); // 로딩 끝나면 해제
-    } catch (error) {
-      console.error('데이터를 불러오는 데 실패했습니다:', error);
-      this.loading = false;
-      window.removeEventListener("beforeunload", this.preventNavigation); // 오류 발생 시 해제
-    }
   }
 };
 </script>

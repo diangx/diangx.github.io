@@ -59,52 +59,75 @@ export default {
   },
   methods: {
     async fetchDeviceInfo() {
-      try {
-        const response = await fetch("http://localhost:3000/api/machines/device_info");
-        const devices = await response.json();
-        this.deviceInfo = Object.values(devices).find(device => device.macaddr === this.macAddress);
+        try {
+            let response;
 
-        if (!this.deviceInfo) {
-          this.message = "MAC Address not found.";
-          this.deviceInfo = null;
-        } else {
-          this.message = `Device Found: ${this.deviceInfo.name}`;
+            try {
+                response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/machines/device_info", {
+                    headers: { 'ngrok-skip-browser-warning': '69420' }
+                });
+            } catch {
+                response = await fetch("http://localhost:3000/api/machines/device_info");
+            }
+
+            const devices = await response.json();
+            this.deviceInfo = Object.values(devices).find(device => device.macaddr === this.macAddress);
+
+            if (!this.deviceInfo) {
+                this.message = "MAC Address not found.";
+                this.deviceInfo = null;
+            } else {
+                this.message = `Device Found: ${this.deviceInfo.name}`;
+            }
+        } catch {
+            this.message = "Error fetching device info.";
         }
-      } catch (error) {
-        this.message = "Error fetching device info.";
-      }
-      this.snackbar = true;
+
+        this.snackbar = true;
     },
     handleFileUpload(event) {
       this.selectedFile = event.target.files[0];
     },
     async uploadFirmware() {
-    if (!this.selectedFile || !this.macAddress) {
-        this.message = "Please enter a MAC Address and select a file.";
+        if (!this.selectedFile || !this.macAddress) {
+            this.message = "Please enter a MAC Address and select a file.";
+            this.snackbar = true;
+            return;
+        }
+
+        const payload = {
+            macAddress: this.macAddress,
+            fileName: this.selectedFile.name  // **파일명만 보냄**
+        };
+
+        try {
+            let response;
+
+            try {
+                response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/update-firmware", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch {
+                response = await fetch("http://localhost:3000/api/update-firmware", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
+
+            const result = await response.json();
+            this.message = result.message;
+        } catch {
+            this.message = "Error updating firmware.";
+        }
+        
         this.snackbar = true;
-        return;
-    }
-
-    const payload = {
-        macAddress: this.macAddress,
-        fileName: this.selectedFile.name  // **파일명만 보냄**
-    };
-
-    try {
-        const response = await fetch("http://localhost:3000/api/update-firmware", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        this.message = result.message;
-    } catch (error) {
-        this.message = "Error updating firmware.";
-    }
-    this.snackbar = true;
     }
   }
 };

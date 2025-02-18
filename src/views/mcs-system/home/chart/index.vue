@@ -28,9 +28,18 @@ export default {
   methods: {
     async fetchMachineData() {
       try {
-        const response = await fetch("http://localhost:3000/api/machines/production_and_charge");
-        const machineData = await response.json();
+        const axios = require('axios');
+        let response;
 
+        try {
+            response = await axios.get("https://definitely-handy-cow.ngrok-free.app/api/machines/production_and_charge", {
+                headers: { 'ngrok-skip-browser-warning': '69420' }
+            });
+        } catch {
+            response = await axios.get("http://localhost:3000/api/machines/production_and_charge");
+        }
+
+        const machineData = response.data;
         const groupedData = {};
 
         Object.values(machineData).forEach(machine => {
