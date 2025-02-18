@@ -1,55 +1,43 @@
 <template>
-  <div>
+  <div class="chart-container">
     <canvas id="productionChart"></canvas>
   </div>
 </template>
 
 <script>
-// Chart.js와 필요한 모듈 임포트
 import { Chart } from 'chart.js';
 import { CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, registerables } from 'chart.js';
 
-// Chart.js 등록
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-Chart.register(...registerables);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ...registerables);
 
 export default {
   name: 'MachineChart',
   data() {
     return {
-      machineData1: {},  // 기계 1 데이터 저장
-      machineData2: {},  // 기계 2 데이터 저장
-      machineData3: {}   // 기계 3 데이터 저장
+      chart: null,
+      machineData1: {},
+      machineData2: {},
+      machineData3: {}
     };
   },
   mounted() {
-    // 컴포넌트 마운트 시 데이터 요청
     this.fetchMachineData();
+    window.addEventListener('resize', this.resizeChart);
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.resizeChart);
   },
   methods: {
     async fetchMachineData() {
       try {
-        // 기계 1, 2, 3의 데이터 각각 가져오기
         const response1 = await fetch('http://localhost:3000/api/machine1_Data');
-        const data1 = await response1.json();
-        this.machineData1 = data1;
+        this.machineData1 = await response1.json();
 
         const response2 = await fetch('http://localhost:3000/api/machine2_Data');
-        const data2 = await response2.json();
-        this.machineData2 = data2;
+        this.machineData2 = await response2.json();
 
         const response3 = await fetch('http://localhost:3000/api/machine3_Data');
-        const data3 = await response3.json();
-        this.machineData3 = data3;
+        this.machineData3 = await response3.json();
 
         this.renderChart();
       } catch (error) {
@@ -57,132 +45,133 @@ export default {
       }
     },
     renderChart() {
-      // 월별 데이터를 계산하기 위해서
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
+      const ctx = document.getElementById('productionChart').getContext('2d');
       const monthlyData1 = this.aggregateMonthlyData(this.machineData1);
       const monthlyData2 = this.aggregateMonthlyData(this.machineData2);
       const monthlyData3 = this.aggregateMonthlyData(this.machineData3);
 
-      // canvas context 가져오기
-      const ctx = document.getElementById('productionChart').getContext('2d');
-
-      // 월별 날짜 (예: "2023-01")
       const labels = Object.keys(monthlyData1);
       const machine1Production = labels.map(date => monthlyData1[date].production);
       const machine2Production = labels.map(date => monthlyData2[date].production);
       const machine3Production = labels.map(date => monthlyData3[date].production);
-      const machine1ChargeAvg = labels.map(date => monthlyData1[date].chargeAvg);
-      const machine2ChargeAvg = labels.map(date => monthlyData2[date].chargeAvg);
-      const machine3ChargeAvg = labels.map(date => monthlyData3[date].chargeAvg);
 
-      // 차트 그리기
-      new Chart(ctx, {
-        type: 'line',  // 차트 유형: 선 그래프
+      const machine1ChargeAvg = labels.map(date => monthlyData1[date].charge);
+      const machine2ChargeAvg = labels.map(date => monthlyData2[date].charge);
+      const machine3ChargeAvg = labels.map(date => monthlyData3[date].charge);
+
+      this.chart = new Chart(ctx, {
+        type: 'line',
         data: {
-          labels: labels,  // x축에 월별 날짜 표시
+          labels: labels,
           datasets: [
+            // 생산량 데이터 (왼쪽 y축: y)
             {
-              label: 'CF AGV 생산량',
-              data: machine1Production,  // 기계1 생산량 데이터
-              borderColor: '#1f77b4',  // 선 색상 (기계 1)
-              backgroundColor: 'rgba(31, 119, 180, 0.2)',  // 배경색
-              fill: true,  // 선 아래 영역 채우기
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              pointStyle: 'circle',  // 포인트 스타일을 원으로 설정
-              yAxisID: 'y1',  // 첫 번째 y축
+              label: '기계 1 생산량',
+              data: machine1Production,
+              borderColor: '#1f77b4',
+              backgroundColor: 'rgba(31, 119, 180, 0.2)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2,
+              yAxisID: 'y'
             },
             {
-              label: 'PT AGV 생산량',
-              data: machine2Production,  // 기계2 생산량 데이터
-              borderColor: '#2ca02c',  // 선 색상 (기계 2)
-              backgroundColor: 'rgba(44, 160, 44, 0.2)',  // 배경색
-              fill: true,  // 선 아래 영역 채우기
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              pointStyle: 'triangle',  // 포인트 스타일을 삼각형으로 설정
-              yAxisID: 'y1',  // 첫 번째 y축
+              label: '기계 2 생산량',
+              data: machine2Production,
+              borderColor: '#2ca02c',
+              backgroundColor: 'rgba(44, 160, 44, 0.2)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2,
+              yAxisID: 'y'
             },
             {
-              label: 'HR AGV 3 생산량',
-              data: machine3Production,  // 기계3 생산량 데이터
-              borderColor: '#ff7f0e',  // 선 색상 (기계 3)
-              backgroundColor: 'rgba(255, 127, 14, 0.2)',  // 배경색
-              fill: true,  // 선 아래 영역 채우기
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              pointStyle: 'rect',  // 포인트 스타일을 사각형으로 설정
-              yAxisID: 'y1',  // 첫 번째 y축
+              label: '기계 3 생산량',
+              data: machine3Production,
+              borderColor: '#ff7f0e',
+              backgroundColor: 'rgba(255, 127, 14, 0.2)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2,
+              yAxisID: 'y'
             },
+            // 평균 충전 횟수 데이터 (오른쪽 y축: y2) - 포인트와 선 두께를 키워서 가시성을 높임
             {
-              label: 'CF AGV 1 평균 충전횟수',
-              data: machine1ChargeAvg,  // 기계1 평균 충전횟수 데이터
-              borderColor: '#e7298a',  // 선 색상 (기계 1 충전횟수)
-              backgroundColor: 'rgba(231, 41, 138, 0.2)',  // 배경색
-              fill: false,  // 선 아래 영역 채우지 않음
+              label: '기계 1 평균 충전 횟수',
+              data: machine1ChargeAvg,
+              borderColor: '#9467bd',
+              backgroundColor: 'rgba(148, 103, 189, 0.2)',
+              fill: false,
+              tension: 0.3,
+              borderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              yAxisID: 'y2',
               borderDash: [5, 5],  // 점선 스타일
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              yAxisID: 'y2',  // 두 번째 y축
             },
             {
-              label: 'PT AGV 2 평균 충전횟수',
-              data: machine2ChargeAvg,  // 기계2 평균 충전횟수 데이터
-              borderColor: '#ff6347',  // 선 색상 (기계 2 충전횟수)
-              backgroundColor: 'rgba(255, 99, 71, 0.2)',  // 배경색
-              fill: false,  // 선 아래 영역 채우지 않음
+              label: '기계 2 평균 충전 횟수',
+              data: machine2ChargeAvg,
+              borderColor: '#d62728',
+              backgroundColor: 'rgba(214, 39, 40, 0.2)',
+              fill: false,
+              tension: 0.3,
+              borderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              yAxisID: 'y2',
               borderDash: [5, 5],  // 점선 스타일
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              yAxisID: 'y2',  // 두 번째 y축
             },
             {
-              label: 'HR AGV 3 평균 충전횟수',
-              data: machine3ChargeAvg,  // 기계3 평균 충전횟수 데이터
-              borderColor: '#d62728',  // 선 색상 (기계 3 충전횟수)
-              backgroundColor: 'rgba(214, 39, 40, 0.2)',  // 배경색
-              fill: false,  // 선 아래 영역 채우지 않음
+              label: '기계 3 평균 충전 횟수',
+              data: machine3ChargeAvg,
+              borderColor: '#8c564b',
+              backgroundColor: 'rgba(140, 86, 75, 0.2)',
+              fill: false,
+              tension: 0.3,
+              borderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              yAxisID: 'y2',
               borderDash: [5, 5],  // 점선 스타일
-              tension: 0.3,  // 선의 곡률
-              borderWidth: 2,  // 선 두께
-              yAxisID: 'y2',  // 두 번째 y축
             }
           ]
         },
         options: {
-          responsive: true,  // 반응형 차트
-          maintainAspectRatio: false,  // 비율 유지하지 않음 (자유롭게 크기 조정)
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             x: {
-              type: 'category',  // x축은 날짜별 카테고리
               title: {
                 display: true,
                 text: '날짜'
-              },
-              ticks: {
-                maxRotation: 45,  // x축 레이블 회전
-                minRotation: 45
               }
             },
-            y1: {
+            y: {
+              type: 'linear',
+              position: 'left',
               title: {
                 display: true,
                 text: '생산량'
               },
-              beginAtZero: true,  // y축 0부터 시작
-              ticks: {
-                stepSize: 20  // 간격 설정
-              }
+              beginAtZero: true
             },
             y2: {
-              position: 'right',  // 오른쪽 y축
+              type: 'linear',
+              position: 'right',
               title: {
                 display: true,
-                text: '평균 충전횟수'
+                text: '평균 충전 횟수'
               },
-              ticks: {
-                beginAtZero: true,
-                max: 10,  // 충전횟수 최대값 설정
-                stepSize: 1  // 간격 설정
+              beginAtZero: true,
+              min: 0,
+              max: 5,
+              grid: {
+                drawOnChartArea: false
               }
             }
           },
@@ -201,28 +190,29 @@ export default {
         }
       });
     },
-    // 월별 생산량과 평균 충전횟수를 집계하는 함수
+    resizeChart() {
+      if (this.chart) {
+        this.chart.resize();
+      }
+    },
     aggregateMonthlyData(machineData) {
       const monthlyData = {};
-
-      // 각 날짜에 대해 기계의 생산량과 충전횟수를 월별로 집계
       for (const date in machineData) {
-        const [year, month] = date.split('-');  // "YYYY-MM" 형식으로 날짜를 분리
-        const monthKey = `${year}-${month}`;  // 월별 키 (예: "2023-01")
+        const [year, month] = date.split('-');
+        const monthKey = `${year}-${month}`;
 
         if (!monthlyData[monthKey]) {
           monthlyData[monthKey] = { production: 0, charge: 0, days: 0 };
         }
 
-        // 기계의 생산량과 충전횟수 합산
         monthlyData[monthKey].production += machineData[date].production;
         monthlyData[monthKey].charge += machineData[date].charge;
-        monthlyData[monthKey].days += 1;  // 해당 월에 포함된 일수를 카운트
+        monthlyData[monthKey].days += 1;
       }
-
-      // 평균 충전횟수 계산
-      for (const monthKey in monthlyData) {
-        monthlyData[monthKey].chargeAvg = monthlyData[monthKey].charge / monthlyData[monthKey].days;
+      
+      // 일별 충전 횟수의 평균값 계산
+      for (const key in monthlyData) {
+        monthlyData[key].charge /= monthlyData[key].days;
       }
 
       return monthlyData;
@@ -232,7 +222,13 @@ export default {
 </script>
 
 <style scoped>
-#productionChart {
-  width: 50%;
+.chart-container {
+  width: 100%;
+  height: 400px;
+  min-height: 300px;
+}
+canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>
