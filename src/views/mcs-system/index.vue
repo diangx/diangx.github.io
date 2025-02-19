@@ -27,23 +27,33 @@
         <resultData></resultData>
       </div>
   
-      <div v-show="value === 3">
+      <div v-if="value === 3">
         <upgradePage></upgradePage>
       </div>
+
+      <!-- <v-footer style="min-height: 60px; display: flex; justify-content: center; align-items: center;">
+        <img 
+          src="@/assets/logo.png" 
+          alt="Logo" 
+          style="max-height: 50px; max-width: 150px; opacity: 0.5;"
+        />
+      </v-footer> -->
   </div>
 </template>
 
 <script>
-// HOME
+/* HOME TAB */
 import statusData from './home/status/index.vue'
 import chartData from './home/chart/index.vue'
 // import factoryData from './home/factory/index.vue'
 
-// DATA
+/* DATA TAB */
 import resultData from './data/result/index.vue'
 
-// DATA
+/* UPGRADE TAB */
 import upgradePage from './upgrade/index.vue'
+
+import { WS_URL } from "@/shared/config";
 
 export default {
   components: {
@@ -78,14 +88,7 @@ export default {
             return;
         }
 
-        let wsUrl = "wss://definitely-handy-cow.ngrok-free.app";
-
-        try {
-            window.socket = new WebSocket(wsUrl);
-        } catch {
-            wsUrl = "ws://localhost:3000";
-            window.socket = new WebSocket(wsUrl);
-        }
+        window.socket = new WebSocket(WS_URL);
 
         window.socket.onopen = () => {};
 
