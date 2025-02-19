@@ -18,6 +18,7 @@
           <p><strong>Current Version:</strong> {{ deviceInfo.version }}</p>
           <p><strong>Status:</strong> {{ deviceInfo.status }}</p>
           <p><strong>IP Address:</strong> {{ deviceInfo.ipaddr }}</p>
+          <p><strong>Battery:</strong> {{ deviceInfo.battery }}</p>
         </v-alert>
 
         <v-file-input
@@ -58,7 +59,7 @@ export default {
     };
   },
   methods: {
-    async fetchDeviceInfo() {
+    async fetchDeviceInfo(init) {
         try {
             let response;
 
@@ -73,7 +74,10 @@ export default {
             const devices = await response.json();
             this.deviceInfo = Object.values(devices).find(device => device.macaddr === this.macAddress);
 
-            if (!this.deviceInfo) {
+            if(init) {
+              return;
+            }
+            else if (!this.deviceInfo) {
                 this.message = "MAC Address not found.";
                 this.deviceInfo = null;
             } else {
@@ -123,6 +127,8 @@ export default {
 
             const result = await response.json();
             this.message = result.message;
+
+            this.fetchDeviceInfo(this.macAddress)
         } catch {
             this.message = "Error updating firmware.";
         }
