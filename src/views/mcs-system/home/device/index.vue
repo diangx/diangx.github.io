@@ -3,7 +3,7 @@
         <v-row justify="center" class="mt-4">
             <v-col cols="12" md="8">
                 <v-card class="pa-4" elevation="2">
-                    <h2 class="mb-4 text-h5">가온브로드밴드 양산</h2>
+                    <h2 class="mb-4 text-h5">실시간 로봇 위치</h2>
 
                     <canvas
                         ref="myCanvas"
