@@ -1,160 +1,154 @@
 <template>
-  <div class="chart-container">
-    <canvas id="productionChart"></canvas>
+  <div>
+    <canvas id="myChart"></canvas>
   </div>
 </template>
 
 <script>
 import { Chart } from 'chart.js';
-import { CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, registerables } from 'chart.js';
+import { CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, registerables } from 'chart.js';
+import { HTTP_URL } from "@/shared/config";
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ...registerables);
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ...registerables);
 
 export default {
   name: 'MachineChart',
   data() {
     return {
       chart: null,
-      machineData: []
+      machineData: [] // 필요 시 API 데이터를 저장할 변수
     };
   },
   mounted() {
     this.fetchMachineData();
     window.addEventListener('resize', this.resizeChart);
+    // 실제 환경에서는 setInterval로 주기적으로 업데이트 할 수 있습니다.
+    // setInterval(() => this.fetchMachineData(), 60 * 60 * 1000);
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.resizeChart);
   },
   methods: {
-    async fetchMachineData() {
-      try {
-        const axios = require('axios');
-        let response;
-
-        try {
-            response = await axios.get("https://definitely-handy-cow.ngrok-free.app/api/machines/production_and_charge", {
-                headers: { 'ngrok-skip-browser-warning': '69420' }
-            });
-        } catch {
-            response = await axios.get("http://localhost:3000/api/machines/production_and_charge");
-        }
-
-        const machineData = response.data;
-        const groupedData = {};
-
-        Object.values(machineData).forEach(machine => {
-          Object.keys(machine).forEach(date => {
-            const record = machine[date];
-            const { machineName, production, charge } = record;
-            const month = date.substring(0, 7);
-
-            if (!groupedData[machineName]) {
-              groupedData[machineName] = {};
-            }
-            
-            if (!groupedData[machineName][month]) {
-              groupedData[machineName][month] = { totalProduction: 0, totalCharge: 0, count: 0 };
-            }
-
-            groupedData[machineName][month].totalProduction += production;
-            groupedData[machineName][month].totalCharge += charge;
-            groupedData[machineName][month].count += 1;
-          });
-        });
-
-        this.machineData = Object.keys(groupedData).flatMap(machineName => 
-          Object.keys(groupedData[machineName]).map(month => ({
-            machineName,
-            month,
-            avgProduction: (groupedData[machineName][month].totalProduction / groupedData[machineName][month].count).toFixed(2),
-            avgCharge: (groupedData[machineName][month].totalCharge / groupedData[machineName][month].count).toFixed(2)
-          }))
-        );
-        this.renderChart();
-      } catch (error) {
-        console.error("데이터 가져오기 오류:", error);
-      }
-    },
-
-    renderChart() {
-      if (this.chart) {
-        this.chart.destroy();
-      }
-
-      const ctx = document.getElementById('productionChart').getContext('2d');
-      const labels = [...new Set(this.machineData.map(item => item.month))].sort();
-      const machineNames = [...new Set(this.machineData.map(item => item.machineName))];
-
-      const datasets = machineNames.map((name, index) => ({
-        label: `${name} 평균 생산량`,
-        data: labels.map(month => {
-          const entry = this.machineData.find(item => item.machineName === name && item.month === month);
-          return entry ? parseFloat(entry.avgProduction) : null;
-        }),
-        borderColor: `hsl(${index * 60}, 70%, 50%)`,
-        backgroundColor: `hsla(${index * 60}, 70%, 50%, 0.3)`,
-        fill: true,
-        tension: 0.3,
-        borderWidth: 2,
-        yAxisID: 'y'
-      }));
-
-      datasets.push(...machineNames.map((name, index) => ({
-        label: `${name} 평균 충전 횟수`,
-        data: labels.map(month => {
-          const entry = this.machineData.find(item => item.machineName === name && item.month === month);
-          return entry ? parseFloat(entry.avgCharge) : null;
-        }),
-        borderColor: `hsl(${index * 60 + 30}, 70%, 40%)`,
-        backgroundColor: `hsla(${index * 60 + 30}, 70%, 40%, 0.3)`,
-        fill: false,
-        tension: 0.3,
-        borderWidth: 3,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        yAxisID: 'y2',
-        borderDash: [5, 5]
-      })));
-
-      this.chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: datasets
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { title: { display: true, text: '월별' } },
-            y: { type: 'linear', position: 'left', title: { display: true, text: '평균 생산량' }, beginAtZero: true },
-            y2: { type: 'linear', position: 'right', title: { display: true, text: '평균 충전 횟수' }, beginAtZero: true, min: 0, max: 5, grid: { drawOnChartArea: false } }
-          },
-          plugins: {
-            title: { display: true, text: '월별 기기 평균 생산량 및 충전 횟수' },
-            legend: { position: 'top', labels: { boxWidth: 20 } }
-          }
-        }
-      });
-    },
-
     resizeChart() {
       if (this.chart) {
         this.chart.resize();
+      }
+    },
+    async fetchMachineData() {
+      try {
+        // 실제 API 주소에 맞춰 수정하세요.
+        const response = await fetch(`${HTTP_URL}/api/warehouse`, {
+          headers: { 'ngrok-skip-browser-warning': '69420' }
+        });
+
+        if (!response.ok) {
+          throw new Error(`창고 API 에러: ${response.statusText}`);
+        }
+        const data = await response.json();
+
+        // 모든 층의 데이터를 하나의 배열로 합칩니다.
+        const machines = Object.values(data).flat();
+
+        // 데이터 내에서 가장 최신 시간(maxTime)을 구합니다.
+        const maxTime = new Date(Math.max(...machines.map(m => new Date(m.date))));
+        // 최신 시간 기준으로 버킷의 끝을 정하기 위해, 최신 시간을 정각으로 맞춥니다.
+        maxTime.setMinutes(0, 0, 0);
+
+        // 최신 버킷을 maxTime으로 하고, 거기서 11시간 전까지 총 12개 버킷을 생성합니다.
+        const startBucket = new Date(maxTime.getTime() - 11 * 60 * 60 * 1000);
+        const buckets = [];
+        for (let i = 0; i < 12; i++) {
+          const bucketStart = new Date(startBucket.getTime() + i * 60 * 60 * 1000);
+          const bucketEnd = new Date(bucketStart.getTime() + 60 * 60 * 1000);
+          const label = bucketStart.getHours().toString().padStart(2, '0') + ':00';
+          buckets.push({ label, start: bucketStart, end: bucketEnd });
+        }
+        // 버킷 배열의 순서는 왼쪽: 오래된 시간, 오른쪽: 최신 시간
+        const labels = buckets.map(b => b.label);
+
+        const grouped = {};
+        machines.forEach(machine => {
+          const machineTime = new Date(machine.date);
+          // 버킷 범위: startBucket ~ (maxTime + 1시간)
+          if (machineTime >= startBucket && machineTime < new Date(maxTime.getTime() + 60 * 60 * 1000)) {
+            // 해당 데이터가 속하는 버킷 찾기
+            const bucket = buckets.find(b => machineTime >= b.start && machineTime < b.end);
+            if (bucket) {
+              const name = machine.name;
+              if (!grouped[name]) grouped[name] = {};
+              // 초기값 0으로 설정 후 1씩 더합니다.
+              grouped[name][bucket.label] = (grouped[name][bucket.label] || 0) + 1;
+            }
+          }
+        });
+
+        // 각 기계별로 12개 버킷에 대한 처리 건수 배열 구성
+        const datasets = [];
+        for (const [machineName, bucketData] of Object.entries(grouped)) {
+          const dataArr = labels.map(label => bucketData[label] || 0);
+          // 기계별 배경색 설정
+          const colorMap = {
+            "Counter-Balance Forklift Type AGV": "rgba(255, 99, 132, 0.8)",  // 빨간색 계열
+            "Pallet Truck Type AGV": "rgba(54, 162, 235, 0.8)",              // 파란색 계열
+            "High-mast Reach Forklift Type AGV": "rgba(153, 102, 255, 0.8)"     // 보라색 계열
+          };
+          const backgroundColor = colorMap[machineName] || 'rgba(255, 159, 64, 0.8)';
+
+          datasets.push({
+            label: machineName,
+            data: dataArr,
+            backgroundColor,
+            borderWidth: 1
+          });
+        }
+
+        // 차트 생성 또는 업데이트
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (this.chart) {
+          this.chart.data.labels = labels;
+          this.chart.data.datasets = datasets;
+          this.chart.update();
+        } else {
+          this.chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels,
+              datasets
+            },
+            options: {
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'AGV별 시간당 처리 건수'
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false,
+                }
+              },
+              responsive: true,
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: '시간 (왼쪽: 오래된 시간, 오른쪽: 최신 시간)'
+                  }
+                },
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: '처리 건수'
+                  }
+                }
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.error("❌ 창고 데이터 로딩 오류:", error);
       }
     }
   }
 };
 </script>
-
-<style scoped>
-.chart-container {
-  width: 100%;
-  height: 400px;
-  min-height: 300px;
-}
-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-</style>

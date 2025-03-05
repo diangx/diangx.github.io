@@ -19,17 +19,18 @@
 
       <div v-if="value === 1">
         <statusData :status_ws_data="status_ws_data" />
-        <v-divider/>
-        <chartData />
+        <agvData :status_data="status_data" />
+        <deviceData :status_data="status_data" />
+        <chartData/>
       </div>
   
-      <div v-if="value === 2">
+      <!-- <div v-if="value === 2">
         <resultData></resultData>
-      </div>
+      </div> -->
   
-      <div v-if="value === 3">
+      <!-- <div v-if="value === 3">
         <upgradePage></upgradePage>
-      </div>
+      </div> -->
 
       <!-- <v-footer style="min-height: 60px; display: flex; justify-content: center; align-items: center;">
         <img 
@@ -44,29 +45,25 @@
 <script>
 /* HOME TAB */
 import statusData from './home/status/index.vue'
+import agvData from './home/agvcard/index.vue'
+import deviceData from './home/device/index.vue'
 import chartData from './home/chart/index.vue'
-// import factoryData from './home/factory/index.vue'
 
-/* DATA TAB */
-import resultData from './data/result/index.vue'
-
-/* UPGRADE TAB */
-import upgradePage from './upgrade/index.vue'
-
-import { WS_URL } from "@/shared/config";
+import { WS_URL, HTTP_URL } from "@/shared/config";
 
 export default {
   components: {
     statusData,
-    chartData,
-    // factoryData,
-    resultData,
-    upgradePage
+    agvData,
+    deviceData,
+    chartData
   },
   data() {
     return {
       value: 1,
-      status_ws_data: null
+      status_ws_data: null,
+      status_data: null,
+      warehouse_all_data: null
     };
   },
   mounted() {
@@ -92,10 +89,27 @@ export default {
 
         window.socket.onopen = () => {};
 
+        let responseCount = 0;
+
         window.socket.onmessage = (event) => {
             try {
+                responseCount++
                 const data = JSON.parse(event.data);
-                this.status_ws_data = data.status;
+
+                if (responseCount % 5 === 0) {
+
+                }
+                // console.log(data)
+
+                this.status_ws_data = {
+                    totalRobots : data.totalRobots,
+                    runningCount: data.runningCount,
+                    chargingCount: data.chargingCount,
+                    avgBattery: data.avgBattery,
+                    avgTemperature: data.avgTemperature
+                }
+
+                this.status_data = data.robots
             } catch {}
         };
 
@@ -104,6 +118,16 @@ export default {
                 this.connectWebSocket();
             }, 3000);
         };
+    },
+
+    async fetchWarehouse(){
+        const response = await fetch(`${HTTP_URL}/api/warehouse`, {
+          headers: { 'ngrok-skip-browser-warning': '69420' }
+        });
+
+        const data = await response.json();
+
+        this.warehouse_all_data = data
     }
   }
 };
