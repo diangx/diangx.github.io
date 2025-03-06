@@ -14,11 +14,10 @@
         </v-btn>
 
         <v-alert v-if="deviceInfo" type="info" class="mt-4">
+          <p><strong>ID:</strong> {{ deviceInfo.id }}</p>
           <p><strong>Device:</strong> {{ deviceInfo.name }}</p>
-          <p><strong>Current Version:</strong> {{ deviceInfo.version }}</p>
-          <p><strong>Status:</strong> {{ deviceInfo.status }}</p>
-          <p><strong>IP Address:</strong> {{ deviceInfo.ipaddr }}</p>
           <p><strong>Battery:</strong> {{ deviceInfo.battery }}</p>
+          <p><strong>Current Version:</strong> {{ deviceInfo.version }}</p>
         </v-alert>
 
         <v-file-input
@@ -48,6 +47,8 @@
 </template>
 
 <script>
+import { HTTP_URL } from "@/shared/config";
+
 export default {
   data() {
     return {
@@ -61,18 +62,12 @@ export default {
   methods: {
     async fetchDeviceInfo(init) {
         try {
-            let response;
-
-            try {
-                response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/machines/device_info", {
-                    headers: { 'ngrok-skip-browser-warning': '69420' }
-                });
-            } catch {
-                response = await fetch("http://localhost:3000/api/machines/device_info");
-            }
+            let response = await fetch(`${HTTP_URL}/api/robots`);
 
             const devices = await response.json();
             this.deviceInfo = Object.values(devices).find(device => device.macaddr === this.macAddress);
+
+            console.log(this.deviceInfo)
 
             if(init) {
               return;
@@ -105,25 +100,13 @@ export default {
         };
 
         try {
-            let response;
-
-            try {
-                response = await fetch("https://definitely-handy-cow.ngrok-free.app/api/update-firmware", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-            } catch {
-                response = await fetch("http://localhost:3000/api/update-firmware", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-            }
+            let response = await fetch(`${HTTP_URL}/api/update-firmware`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
             const result = await response.json();
             this.message = result.message;
