@@ -1,6 +1,3 @@
-# About
-안녕하세요.김지완 입니다.
-
 # Features
 - Responsive Design: Built with Vuetify for a seamless experience on various devices.
 - Single Page Application: Utilizes Vue Router for smooth and dynamic page transitions.
