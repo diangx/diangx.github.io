@@ -1,6 +1,5 @@
 # About
-안녕하세요.
-개발자 김지완 입니다.
+안녕하세요.김지완 입니다.
 
 # Features
 - Responsive Design: Built with Vuetify for a seamless experience on various devices.
