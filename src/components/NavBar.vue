@@ -12,7 +12,7 @@
                     <b-nav-item to="/home">Home</b-nav-item>
                 </b-navbar-nav>
                 <b-navbar-nav>
-                    <b-nav-item to="/about">Blog</b-nav-item>
+                    <b-nav-item to="/post">Blog</b-nav-item>
                 </b-navbar-nav>
                 <!-- <b-navbar-nav class="ml-auto">
                     <b-nav-item-dropdown right>
