@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkdiangx_git_io"]=self["webpackChunkdiangx_git_io"]||[]).push([[594],{5994:function(n,t,i){i.r(t),i.d(t,{default:function(){return a}});var u=function(){var n=this;n._self._c;return n._m(0)},l=[function(){var n=this,t=n._self._c;return t("div",{staticClass:"blog"},[t("h1",[n._v("blog")])])}],s=i(1656),e={},r=(0,s.A)(e,u,l,!1,null,null,null),a=r.exports}}]);
-//# sourceMappingURL=about.1f21d7bb.js.map

@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkdiangx_git_io"]=self["webpackChunkdiangx_git_io"]||[]).push([[397],{2698:function(n,t,i){i.r(t),i.d(t,{default:function(){return a}});var u=function(){var n=this;n._self._c;return n._m(0)},e=[function(){var n=this,t=n._self._c;return t("div",{staticClass:"home"},[t("h1",[n._v("home")])])}],s=i(1656),l={},r=(0,s.A)(l,u,e,!1,null,null,null),a=r.exports}}]);
+//# sourceMappingURL=HomeView.54ef0932.js.map
