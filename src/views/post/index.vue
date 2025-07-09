@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import macFilter from '@/assets/img/mac_filter.png'
+import macFilter from '@/assets/img/card_macfilter.png'
 
 export default {
     data() {

@@ -11,10 +11,11 @@ function getComponent(name) {
 }
 
 const routes = [
+    { path: "/", redirect: "/home" }, // DEFAULT HOME
     {
         path: "/home",
         name: "home",
-        component: getComponent('HomeView.vue'),
+        component: getComponent('home/index.vue'),
     },
     {
         path: "/post",
