@@ -22,6 +22,16 @@ const routes = [
         name: "post",
         component: getComponent("post/index.vue"),
     },
+    {
+        path: "/post/nlbwmon",
+        name: "nlbwmon",
+        component: getComponent("post/nlbwmon/index.vue"),
+    },
+    {
+        path: "/post/macfilter",
+        name: "macfilter",
+        component: getComponent("post/macfilter/index.vue"),
+    }
 ];
 
 const router = new VueRouter({

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import profile from '@/assets/img/profile_inosuke.png'
+import profile from '@/assets/img/profile_otter.png'
 
 export default {
     data() {
