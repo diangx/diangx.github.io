@@ -7,11 +7,11 @@
             <div
                 v-for="posts in cards"
                 :key="posts.slug"
-                class="col-12 col-lg-9 mb-4"
+                class="col-lg-7 mb-4"
             >
                 <router-link
                     :to="{ name: posts.name }"
-                    class="text-reset d-block"
+                    class="text-reset text-decoration-none d-block"
                 >
                 <b-card no-body class="overflow-hidden w-100">
                     <b-row no-gutters>

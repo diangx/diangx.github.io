@@ -8,6 +8,13 @@ export default [
         show: true
     },
     {
+        name: 'gitcommand',
+        title: '[MEMO] Git Command',
+        sub_title: 'Describe and record the Git commands use.',
+        img: require('@/assets/img/card_gitcommand.png'),
+        show: true
+    },
+    {
         name: 'macfilter',
         title: '[TODO] Wi-Fi MAC-Filtering',
         sub_title: 'Register your Mac to control its connection to Wi-Fi',
