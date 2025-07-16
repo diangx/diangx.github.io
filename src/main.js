@@ -14,6 +14,9 @@ import 'highlight.js/styles/github.css'
 
 import "./assets/global.css"
 
+import MarkdownPage from '@/components/MarkdownPage.vue'
+Vue.component('MarkdownPage', MarkdownPage)
+
 hljs.registerLanguage('javascript', javascript)
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('shell', shell);

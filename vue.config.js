@@ -9,6 +9,14 @@ module.exports = defineConfig({
       alias: {
         '@': path.resolve(__dirname, 'src')
       }
+    },
+    module: {
+      rules: [
+        {
+          test: /\.md$/,
+          use: 'raw-loader'
+        }
+      ]
     }
   }
 })
