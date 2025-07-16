@@ -8,11 +8,15 @@ import "bootstrap-vue/dist/bootstrap-vue.css"
 
 import hljs from 'highlight.js/lib/core'
 import javascript from 'highlight.js/lib/languages/javascript'
+import bash    from 'highlight.js/lib/languages/bash';
+import shell   from 'highlight.js/lib/languages/shell';
 import 'highlight.js/styles/github.css'
 
 import "./assets/global.css"
 
 hljs.registerLanguage('javascript', javascript)
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('shell', shell);
 
 Vue.config.productionTip = false
 
