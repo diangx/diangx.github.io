@@ -31,6 +31,11 @@ const routes = [
         path: "/post/macfilter",
         name: "macfilter",
         component: getComponent("post/macfilter/index.vue"),
+    },
+    {
+        path: "/post/gitcommand",
+        name: "gitcommand",
+        component: getComponent("post/gitcommand/index.vue"),
     }
 ];
 
