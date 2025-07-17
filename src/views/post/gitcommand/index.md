@@ -43,6 +43,9 @@ git log -p -10
 git log --since=1.weeks
 git log --since="1 years 2 day 3 minutes ago"
 
+git log --after=1.weeks
+git log --after="1 years 2 day 3 minutes ago"
+
 # 로그 출력 내용 정의
 git log --stat
 git log --pretty=oneline
