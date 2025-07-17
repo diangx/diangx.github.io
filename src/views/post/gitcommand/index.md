@@ -42,9 +42,12 @@ git log -p -10
 # 시간 기준 커밋
 git log --since=1.weeks
 git log --since="1 years 2 day 3 minutes ago"
-
 git log --after=1.weeks
 git log --after="1 years 2 day 3 minutes ago"
+
+# abc123 커밋이 만들어진 시점 전/후의 커밋 보기
+git log --since="$(git show -s --format=%ci abc123)"
+git log --after="$(git show -s --format=%ci abc123)"
 
 # 로그 출력 내용 정의
 git log --stat
