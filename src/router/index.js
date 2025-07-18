@@ -39,7 +39,7 @@ const routes = [
     },
     {
         path: "/post/nike",
-        name: "nike",
+        name: "stock/nike",
         component: getComponent("post/stock/nike/index.vue"),
     }
 ];

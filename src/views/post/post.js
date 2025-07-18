@@ -15,7 +15,7 @@ export default [
         show: true
     },
     {
-        name: 'nike',
+        name: 'stock/nike',
         title: '[Stock] NIKE analyze',
         sub_title: '',
         img: require('@/assets/img/card_nike.png'),
