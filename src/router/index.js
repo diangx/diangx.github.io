@@ -36,6 +36,11 @@ const routes = [
         path: "/post/gitcommand",
         name: "gitcommand",
         component: getComponent("post/gitcommand/index.vue"),
+    },
+    {
+        path: "/post/nike",
+        name: "nike",
+        component: getComponent("post/stock/nike/index.vue"),
     }
 ];
 

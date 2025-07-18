@@ -15,11 +15,18 @@ export default [
         show: true
     },
     {
+        name: 'nike',
+        title: '[Stock] NIKE analyze',
+        sub_title: '',
+        img: require('@/assets/img/card_nike.png'),
+        show: true
+    },
+    {
         name: 'macfilter',
         title: '[TODO] Wi-Fi MAC-Filtering',
         sub_title: 'Register your Mac to control its connection to Wi-Fi',
         img: require('@/assets/img/card_macfilter.png'),
-        show: true
+        show: false
     }
 ]
   
