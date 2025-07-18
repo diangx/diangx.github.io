@@ -38,7 +38,7 @@ const routes = [
         component: getComponent("post/gitcommand/index.vue"),
     },
     {
-        path: "/post/nike",
+        path: "/post/stock/nike",
         name: "stock/nike",
         component: getComponent("post/stock/nike/index.vue"),
     }
