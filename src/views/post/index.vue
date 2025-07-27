@@ -26,6 +26,16 @@
                         <b-col cols="12" md="8">
                             <b-card-body :title="posts.title">
                                 <b-card-text>
+                                    <div>
+                                        <b-badge
+                                            class="ml-1"
+                                            v-for="(tag, idx) in posts.tag"
+                                            :key="idx"
+                                            :variant="tagColor(tag)"
+                                        >
+                                            {{ tag }}
+                                        </b-badge>
+                                    </div>
                                     {{ posts.sub_title }}
                                 </b-card-text>
                             </b-card-body>
@@ -45,6 +55,16 @@ export default {
     data() {
         return {
             cards : posts.filter(p => p.show)
+        }
+    },
+    methods: {
+        tagColor(tag) {
+            const colorMap = {
+                openwrt: 'primary',
+                stock: 'danger',
+                default: 'secondary'
+            }
+            return colorMap[tag.toLowerCase()] || colorMap.default
         }
     }
 }
