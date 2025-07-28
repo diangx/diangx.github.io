@@ -62,6 +62,8 @@ export default {
             const colorMap = {
                 openwrt: 'primary',
                 stock: 'danger',
+                development: 'info',
+                story: 'success',
                 default: 'secondary'
             }
             return colorMap[tag.toLowerCase()] || colorMap.default
