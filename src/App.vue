@@ -5,7 +5,7 @@
             <router-link to="/home">Home</router-link> |
             <router-link to="/blog">Blog</router-link>
         </nav> -->
-        <div class="px-0 px-md-5">
+        <div :class="containerClass">
             <router-view/>
         </div>
     </div>
@@ -15,7 +15,13 @@
 import NavBar from '@/components/NavBar.vue'
 
 export default {
-	components: { NavBar }
+	components: { NavBar },
+    computed: {
+        containerClass() { // remove class when project route
+            const currentPath = this.$route.path
+            return currentPath.startsWith('/project') ? '' : 'px-0 px-md-5'
+        }
+    }
 }
 </script>
 
