@@ -14,6 +14,9 @@
                 <b-navbar-nav>
                     <b-nav-item to="/post">Blog</b-nav-item>
                 </b-navbar-nav>
+                <b-navbar-nav v-show="false">
+                    <b-nav-item to="/project">Project</b-nav-item>
+                </b-navbar-nav>
                 <!-- <b-navbar-nav class="ml-auto">
                     <b-nav-item-dropdown right>
                         <template #button-content>v2.23.1</template>
