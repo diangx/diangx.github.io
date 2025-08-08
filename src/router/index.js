@@ -41,6 +41,16 @@ const routes = [
         path: "/post/stock/nike",
         name: "stock/nike",
         component: getComponent("post/stock/nike/index.vue"),
+    },
+    {
+        path: "/project",
+        name: "project",
+        component: getComponent("project/index.vue"),
+    },
+    {
+        path: "/project/feargreed",
+        name: "feargreed",
+        component: getComponent("project/feargreed/index.vue"),
     }
 ];
 
