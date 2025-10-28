@@ -1,6 +1,14 @@
 // src/post/projects.js
 export default [
     {
+        name: 'stock/ajinomoto',
+        title: 'Ajinomoto Analyze',
+        sub_title: 'Summary of Ajinomoto stock analysis',
+        img: require('@/assets/img/card_ajinomoto.png'),
+        tag: ['stock','story'],
+        show: true
+    },
+    {
         name: 'nlbwmon',
         title: 'nlbwmon Package',
         sub_title: 'Simple conntrack netlink based traffic accounting',

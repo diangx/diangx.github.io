@@ -37,11 +37,18 @@ const routes = [
         name: "gitcommand",
         component: getComponent("post/gitcommand/index.vue"),
     },
+// STOCK
     {
         path: "/post/stock/nike",
         name: "stock/nike",
         component: getComponent("post/stock/nike/index.vue"),
     },
+    {
+        path: "/post/stock/ajinomoto",
+        name: "stock/ajinomoto",
+        component: getComponent("post/stock/ajinomoto/index.vue"),
+    },
+// END
     {
         path: "/project",
         name: "project",
