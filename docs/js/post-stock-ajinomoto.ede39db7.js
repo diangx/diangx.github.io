@@ -1,2 +1,2 @@
 "use strict";(self["webpackChunkdiangx_git_io"]=self["webpackChunkdiangx_git_io"]||[]).push([[35],{788:function(n,t,u){u.r(t),u.d(t,{default:function(){return r}});var i=function(){var n=this,t=n._self._c;return t("MarkdownPage",{attrs:{slug:"stock/ajinomoto"}})},a=[],e=u(1656),l={},o=(0,e.A)(l,i,a,!1,null,null,null),r=o.exports}}]);
-//# sourceMappingURL=post-stock-ajinomoto.25ef0e5c.js.map
+//# sourceMappingURL=post-stock-ajinomoto.ede39db7.js.map
